@@ -1,0 +1,8 @@
+{
+  "name": "Razer Battery Status",
+  "description": "Show battery percentage of Razer peripherals (based on OpenRazer)",
+  "uuid": "razer-battery@pshchelo.github.com",
+  "shell-version": [
+    "42"
+  ]
+}
