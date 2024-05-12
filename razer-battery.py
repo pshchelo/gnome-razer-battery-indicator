@@ -26,7 +26,16 @@ else:
                 "battery_level": dev.battery_level,
                 "charging": dev.is_charging,
             }
-            for dev in dm.devices if dev.has("battery")
+            # NOTE: for disconnected devices openrazer reportsbattery_level
+            # battery_level of 0, which is not that helpful.
+            # One attribute I have found (on my sample of 1 mouse :-/ )
+            # is that the get_idle_time returns 0 for disconnected and
+            # non-0 for connected device, so use that to filter devices out.
+            for dev in dm.devices if (
+                    dev.has("battery") and
+                    dev.has("get_idle_time") and
+                    dev.get_idle_time()
+            )
         ]
         output["devices"].extend(devices)
     except Exception as exc:
