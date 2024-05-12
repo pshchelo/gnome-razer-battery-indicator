@@ -118,11 +118,7 @@ class Indicator extends PanelMenu.Button {
     _getDeviceBox(devices) {
         const box = new St.BoxLayout({ style_class: "panel-status-menu-box" });
         const device = this._chooseDevice(devices);
-        const icon_name = this._getDeviceIcon(device);
-        const icon = new St.Icon({
-            icon_name: icon_name,
-            style_class: "system-status-icon",
-        });
+        const icon = this._getDeviceIcon(device);
         const percent = new St.Label({
             y_align: Clutter.ActorAlign.CENTER
         });
@@ -138,8 +134,13 @@ class Indicator extends PanelMenu.Button {
     }
 
     _getDeviceIcon(device) {
-        // TODO: choose proper icon based on charge level and charging status
-        return "battery-symbolic";
+        const iconPath = ExtensionUtils.getCurrentExtension().dir.get_child("icons/razer-color-symbolic.svg").get_path()
+        const gicon = Gio.icon_new_for_string(`${iconPath}`)
+        const icon = new St.Icon({
+            gicon: gicon,
+            style_class: "system-status-icon",
+        });
+        return icon
     }
     
 });
