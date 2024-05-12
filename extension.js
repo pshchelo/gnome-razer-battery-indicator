@@ -9,23 +9,32 @@ const PopupMenu = imports.ui.popupMenu;
 const _ = ExtensionUtils.gettext;
 
 const PYTHON_SCRIPT_PATH = "razer-battery.py"
-//const INTERVAL = 300
+const INTERVAL = 5 // in minutes
+
+const DEBUG = false
+const DEBUG_INTERVAL = 30 // in seconds
 
 class OpenRazerDeviceInfo {
     constructor() {
         this._cancellable = null;
     }
 
-    fetch(script, onSuccess) {
+    fetch(onSuccess) {
         this.cancel();
         
-        const pythonExec = ["python3"].find(cmd => GLib.find_program_in_path(cmd));
+        const argv = [
+            ["python3"].find(cmd => GLib.find_program_in_path(cmd)),
+            ExtensionUtils.getCurrentExtension().dir.get_child(PYTHON_SCRIPT_PATH).get_path()
+        ];
 
-        if (!pythonExec) {
+        if (!argv[0]) {
             log("ERROR: Python not found.");
             return;
         }
-        const argv = [pythonExec, script];
+        if (DEBUG) {
+            argv.push("--fake")
+        }
+        
         try {
             const proc = new Gio.Subprocess({
                 argv,
@@ -73,11 +82,11 @@ class Indicator extends PanelMenu.Button {
 
     refresh(devices) {
         this._container.remove_all_children();
-        if (!devices.length) {
-            const box = this._getNoDevicesBox();
-            this._container.add_child(box);
-        } else if (devices.hasOwnProperty("error")) {
+        if (devices.hasOwnProperty("error") || !devices.hasOwnProperty("devices"))  {
             const box = this._getErrorBox();
+            this._container.add_child(box);
+        } else if (!devices.devices.length) {
+            const box = this._getNoDevicesBox();
             this._container.add_child(box);
         } else {
             const box = this._getDeviceBox(devices);
@@ -125,7 +134,7 @@ class Indicator extends PanelMenu.Button {
 
     _chooseDevice(devices) {
         // TODO: choose device with minimal battery level and not charging
-        return devices[0];
+        return devices.devices[0];
     }
 
     _getDeviceIcon(device) {
@@ -146,30 +155,24 @@ class RazerBatteryStatusExtension {
         this._datasource = new OpenRazerDeviceInfo();
         Main.panel.addToStatusArea(this._uuid, this._indicator);
         this._getRefreshButton();
-        this._refresh();
-        //this._loop = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, this._runLoop.bind(this));
-        //this._timeOut = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 10, () => {
-        //    this._connectSignals();
-        //}
+        this._loop = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, this._runLoop.bind(this));
     }
-    //_connectSignals() {
-    //    this._controller.connectObject("device-changed", () => this._refresh(), this);
-    //}
 
-    //_disconnectSignals() {
-    //    this._controller.disconnectObject(this);
-    //}
-
-    //_runLoop() {
-    //    this._refresh();
-
-    //    const interval = this._getInterval();
-    //    this._loop = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, interval, this._runLoop.bind(this));
-    //}
+    _runLoop() {
+        this._refresh();
+        this._loop = GLib.timeout_add_seconds(
+            GLib.PRIORITY_DEFAULT,
+            this._getInterval(),
+            this._runLoop.bind(this)
+        );
+    }
     
-    //_getInterval() {
-    //    return INTERVAL;
-    //}
+    _getInterval() {
+        if (DEBUG) {
+            return DEBUG_INTERVAL;
+        }
+        return INTERVAL * 60;
+    }
 
     _getRefreshButton() {
         const refreshItem = new PopupMenu.PopupMenuItem(_('Refresh'));
@@ -180,8 +183,7 @@ class RazerBatteryStatusExtension {
     }
 
     _refresh() {
-        const pyLocation = ExtensionUtils.getCurrentExtension().dir.get_child(PYTHON_SCRIPT_PATH).get_path();
-        this._datasource.fetch(pyLocation, this._setIndicator());
+        this._datasource.fetch(this._setIndicator());
     }
     
     _setIndicator() {
@@ -192,9 +194,7 @@ class RazerBatteryStatusExtension {
 
     disable() {
         GLib.Source.remove(this._loop);
-        //GLib.Source.remove(this._timeOut);
         this._datasource.cancel();
-        //this._disconnectSignals();
         this._indicator.destroy();
         this._indicator = null;
     }
