@@ -43,6 +43,7 @@ but not in the system tray applet.
 - change icon based on percentage/charging status
 - show device name and more info in the menu
 - more complex icon based on device type (type + battery? only type?)
+- add about dialog
 
 ### Beta (usable for others)
 - support several devices at once
