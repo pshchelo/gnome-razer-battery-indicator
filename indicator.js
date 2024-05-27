@@ -16,14 +16,6 @@ var Indicator = GObject.registerClass(
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem())
             this.refreshItem = new PopupMenu.PopupMenuItem(_('Refresh'));
             this.menu.addMenuItem(this.refreshItem)
-            //this._addAboutButton();
-        }
-
-        _addAboutButton() {
-            const aboutButton = new PopupMenu.PopupMenuItem(_("About"))
-            aboutButton.connect("activate", () => {
-            });
-            this.menu.addMenuItem(aboutButton);
         }
 
         _updateDeviceList(devices) {
@@ -99,7 +91,8 @@ var Indicator = GObject.registerClass(
 
         _getDeviceIcon(device) {
             // TODO: change icon based on battery level and charging status
-            const iconPath = ExtensionUtils.getCurrentExtension().dir.get_child("icons/razer-color-symbolic.svg").get_path()
+            const iconFilePath = "icons/openrazer-static.svg"
+            const iconPath = ExtensionUtils.getCurrentExtension().dir.get_child(iconFilePath).get_path()
             const gicon = Gio.icon_new_for_string(`${iconPath}`)
             const icon = new St.Icon({
                 gicon: gicon,
