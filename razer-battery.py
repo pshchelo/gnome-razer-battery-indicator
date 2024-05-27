@@ -5,7 +5,7 @@ import time
 parser = argparse.ArgumentParser(prog="razer-battery")
 parser.add_argument("--fake", action='store_true')
 args = parser.parse_args()
-output = {"devices": []}
+output = {"devices": [], "error": None}
 if args.fake:
     output["devices"].append(
         {

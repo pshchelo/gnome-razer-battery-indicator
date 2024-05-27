@@ -20,7 +20,7 @@ var Indicator = GObject.registerClass(
 
         _updateDeviceList(devices) {
             this._deviceList.removeAll();
-            if (devices.hasOwnProperty("error") || !devices.hasOwnProperty("devices"))  {
+            if (devices.error)  {
                 this._deviceList.addMenuItem(new PopupMenu.PopupMenuItem("ERROR!"));
             } else if (!devices.devices.length) {
                 this._deviceList.addMenuItem(new PopupMenu.PopupMenuItem("No devices detected"));
@@ -35,7 +35,7 @@ var Indicator = GObject.registerClass(
 
         _updateIcon(devices) {
             this._container.remove_all_children();
-            if (devices.hasOwnProperty("error") || !devices.hasOwnProperty("devices"))  {
+            if (devices.error)  {
                 const box = this._getErrorBox();
                 this._container.add_child(box);
             } else if (!devices.devices.length) {
