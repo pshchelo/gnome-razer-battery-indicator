@@ -39,4 +39,5 @@ else:
         output["devices"].extend(devices)
     except Exception as exc:
         output["error"] = str(exc)
+output["devices"].sort(key=lambda device: device["battery_level"])
 print(json.dumps(output))

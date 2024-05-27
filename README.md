@@ -36,19 +36,15 @@ but not in the system tray applet.
 
 ## TODO
 
-### alpha
-- choose device to show main icon for based on battery level and charging status
-
-### Beta (usable for others)
+- port to GNOME 45+
+- support customizations
+  - polling interval
+  - debug mode
 - change icon based on percentage/charging status
 - more complex icon based on device type (type + battery? only type?)
 - properly react to device (dis|re)connects
   - openrazer does not seem to react too well,
     it remembers the device and returns battery level of 0 for disconnected devices it remembers
-- support customizations
-  - polling interval
-  - choose which device battery status to show in the main icon?
-    - show the least charged (and non-charging?) device?
 - publish to GNOME extensions web site
 
 # Attributions

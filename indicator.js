@@ -45,7 +45,7 @@ var Indicator = GObject.registerClass(
                 const box = this._getNoDevicesBox();
                 this._container.add_child(box);
             } else {
-                const box = this._getDeviceBox(this._chooseDevice(devices));
+                const box = this._getDeviceBox(devices.devices[0]);
                 this._container.add_child(box);
             }
         }
@@ -85,11 +85,6 @@ var Indicator = GObject.registerClass(
             box.add_child(icon);
             box.add_child(percent);
             return box;
-        }
-
-        _chooseDevice(devices) {
-            // TODO: choose device with minimal battery level and not charging
-            return devices.devices[0];
         }
 
         _getDeviceIcon(device) {
