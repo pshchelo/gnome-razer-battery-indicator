@@ -10,15 +10,38 @@ var Indicator = GObject.registerClass(
         _init() {
             super._init(0.0, _("Razer Battery Indicator"));
             this._container = new St.BoxLayout();
-            this.add_child(this._container)
-            this.menu.addMenuItem(new PopupMenu.PopupMenuItem(_("Razer Battery Status")))
+            this.add_child(this._container);
+            this._deviceList = new PopupMenu.PopupMenuSection("Razer Devices");
+            this.menu.addMenuItem(this._deviceList)
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem())
+            this.refreshItem = new PopupMenu.PopupMenuItem(_('Refresh'));
+            this.menu.addMenuItem(this.refreshItem)
+            //this._addAboutButton();
         }
 
-        _addMenuItem(item) {
-            this.menu.addMenuItem(item);
+        _addAboutButton() {
+            const aboutButton = new PopupMenu.PopupMenuItem(_("About"))
+            aboutButton.connect("activate", () => {
+            });
+            this.menu.addMenuItem(aboutButton);
         }
 
-        refresh(devices) {
+        _updateDeviceList(devices) {
+            this._deviceList.removeAll();
+            if (devices.hasOwnProperty("error") || !devices.hasOwnProperty("devices"))  {
+                this._deviceList.addMenuItem(new PopupMenu.PopupMenuItem("ERROR!"));
+            } else if (!devices.devices.length) {
+                this._deviceList.addMenuItem(new PopupMenu.PopupMenuItem("No devices detected"));
+            } else {
+                for (const dev of devices.devices) {
+                    // TODO: add dynamic (?) icons and charge status
+                    let menuText = dev.battery_level + "% " + dev.name;
+                    this._deviceList.addMenuItem(new PopupMenu.PopupMenuItem(menuText));
+                }
+            };
+        }
+
+        _updateIcon(devices) {
             this._container.remove_all_children();
             if (devices.hasOwnProperty("error") || !devices.hasOwnProperty("devices"))  {
                 const box = this._getErrorBox();
@@ -27,10 +50,14 @@ var Indicator = GObject.registerClass(
                 const box = this._getNoDevicesBox();
                 this._container.add_child(box);
             } else {
-                const box = this._getDeviceBox(devices);
+                const box = this._getDeviceBox(this._chooseDevice(devices));
                 this._container.add_child(box);
             }
-            // TODO: update menu as well
+        }
+
+        refresh(devices) {
+            this._updateIcon(devices)
+            this._updateDeviceList(devices)
         }
 
         _getNoDevicesBox() {
@@ -53,9 +80,8 @@ var Indicator = GObject.registerClass(
             return box;
         }
 
-        _getDeviceBox(devices) {
+        _getDeviceBox(device) {
             const box = new St.BoxLayout({ style_class: "panel-status-menu-box" });
-            const device = this._chooseDevice(devices);
             const icon = this._getDeviceIcon(device);
             const percent = new St.Label({
                 y_align: Clutter.ActorAlign.CENTER
@@ -72,6 +98,7 @@ var Indicator = GObject.registerClass(
         }
 
         _getDeviceIcon(device) {
+            // TODO: change icon based on battery level and charging status
             const iconPath = ExtensionUtils.getCurrentExtension().dir.get_child("icons/razer-color-symbolic.svg").get_path()
             const gicon = Gio.icon_new_for_string(`${iconPath}`)
             const icon = new St.Icon({

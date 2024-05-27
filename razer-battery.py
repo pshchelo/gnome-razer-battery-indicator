@@ -9,10 +9,18 @@ output = {"devices": []}
 if args.fake:
     output["devices"].append(
         {
-            "name": "Fake Razer Device",
+            "name": "Fake Razer Mouse",
             "type": "mouse",
             "battery_level": 100 - int(time.localtime().tm_min * 100 / 60),
             "charging": False,
+        }
+    )
+    output["devices"].append(
+        {
+            "name": "Fake Razer Keyboard",
+            "type": "keyboard",
+            "battery_level": int(time.localtime().tm_min * 100 / 60),
+            "charging": True,
         }
     )
 else:

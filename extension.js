@@ -22,9 +22,11 @@ class RazerBatteryStatusExtension {
 
     enable() {
         this._indicator = new Indicator();
+        this._indicator.refreshItem.connect('activate', () => {
+            this._refresh();
+        });
         this._datasource = new OpenRazerDeviceInfo();
         Main.panel.addToStatusArea(this._uuid, this._indicator);
-        this._getRefreshButton();
         this._loop = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, this._runLoop.bind(this));
     }
 
@@ -42,14 +44,6 @@ class RazerBatteryStatusExtension {
             return Constants.DEBUG_INTERVAL;
         }
         return Constants.INTERVAL * 60;
-    }
-
-    _getRefreshButton() {
-        const refreshItem = new PopupMenu.PopupMenuItem(_('Refresh'));
-        refreshItem.connect('activate', () => {
-            this._refresh();
-        });
-        this._indicator._addMenuItem(refreshItem);
     }
 
     _refresh() {
