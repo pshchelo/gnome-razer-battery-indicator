@@ -26,8 +26,11 @@ var Indicator = GObject.registerClass(
                 this._deviceList.addMenuItem(new PopupMenu.PopupMenuItem("No devices detected"));
             } else {
                 for (const dev of devices.devices) {
-                    // TODO: add dynamic (?) icons and charge status
+                    // TODO: add dynamic icons
                     let menuText = dev.battery_level + "% " + dev.name;
+                    if (dev.charging) {
+                        menuText += " (charging)"
+                    }
                     this._deviceList.addMenuItem(new PopupMenu.PopupMenuItem(menuText));
                 }
             };
