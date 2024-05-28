@@ -23,16 +23,18 @@ Tested on GNOME 42, probably will work on GNOME 43 and 44,
 and I expect it won't work on GNOME 45 due to some API changes,
 will have to be adjusted later.
 
-Currently only first device with the 'battery' is displayed as a systray icon.
+When there are several devices, the battery level for the device with least
+battery will be shown in the icon, all the devices with names, battery level
+and charging status are listed in the menu.
 
-Battery charge level polling interval is hardcoded to once in 5 minutes.
+Battery charge level polling interval is hardcoded to 5 minutes.
 
 See [TODO](#todo) below for list of possibly planned improvements :-). 
 
 ## Motivation
 Could not find anything right away, so decided to write my own :-)
-The `Polychromatic` openrazer client shows battery info only in the controller app
-but not in the system tray applet.
+The `Polychromatic` openrazer client shows battery info only
+in the controller app but not in the system tray applet.
 
 ## TODO
 
@@ -40,6 +42,7 @@ but not in the system tray applet.
 - support customizations
   - polling interval
   - debug mode
+  - icon style (symbolic, static, chroma)
 - change icon based on percentage/charging status
 - more complex icon based on device type (type + battery? only type?)
 - properly react to device (dis|re)connects
