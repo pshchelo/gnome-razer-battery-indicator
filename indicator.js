@@ -1,12 +1,21 @@
-const { GObject, Gio, St, Clutter } = imports.gi;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const ExtensionUtils = imports.misc.extensionUtils;
-const _ = ExtensionUtils.gettext;
+import GObject from 'gi://GObject';
+import Gio from 'gi://Gio';
+import St from 'gi://St';
+import Clutter from 'gi://Clutter';
+
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 
-var Indicator = GObject.registerClass(
+export const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
+
+        constructor(ext_dir) {
+          super();
+          this._ext_dir = ext_dir;
+        }
+
         _init() {
             super._init(0.0, _("Razer Battery Indicator"));
             this._container = new St.BoxLayout();
@@ -90,7 +99,7 @@ var Indicator = GObject.registerClass(
         _getDeviceIcon(device) {
             // TODO: change icon based on battery level and charging status
             const iconFilePath = "icons/openrazer-static.svg"
-            const iconPath = ExtensionUtils.getCurrentExtension().dir.get_child(iconFilePath).get_path()
+            const iconPath = this._ext_dir.get_child(iconFilePath).get_path()
             const gicon = Gio.icon_new_for_string(`${iconPath}`)
             const icon = new St.Icon({
                 gicon: gicon,
@@ -100,4 +109,3 @@ var Indicator = GObject.registerClass(
         }
         
 });
-

@@ -1,12 +1,13 @@
-const {Gio, GLib} = imports.gi;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Constants = Me.imports.constants
+import GLib from 'gi://GLib';
+import Gio from 'gi://Gio';
+
+import * as Constants from './constants.js';
 
 
-var OpenRazerDeviceInfo = class OpenRazerDeviceInfo {
-    constructor() {
+export const OpenRazerDeviceInfo = class OpenRazerDeviceController {
+    constructor(ext_dir) {
         this._cancellable = null;
+        this._ext_dir = ext_dir;
     }
 
     fetch(onSuccess) {
@@ -14,7 +15,7 @@ var OpenRazerDeviceInfo = class OpenRazerDeviceInfo {
         
         const argv = [
             ["python3"].find(cmd => GLib.find_program_in_path(cmd)),
-            Me.dir.get_child(Constants.PYTHON_SCRIPT_PATH).get_path()
+            this._ext_dir.get_child(Constants.PYTHON_SCRIPT_PATH).get_path(),
         ];
 
         if (!argv[0]) {

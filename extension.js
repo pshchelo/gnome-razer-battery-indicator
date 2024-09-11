@@ -1,31 +1,19 @@
-const {GLib} = imports.gi;
-// TODO: Gnome 45 works differently
-// https://gjs.guide/extensions/upgrading/gnome-shell-45.html#esm
-const ExtensionUtils = imports.misc.extensionUtils;
-const Main = imports.ui.main;
-const PopupMenu = imports.ui.popupMenu;
+import GLib from 'gi://GLib';
+import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-const Me = ExtensionUtils.getCurrentExtension();
-const Constants = Me.imports.constants
-const {OpenRazerDeviceInfo} = Me.imports.razer
-const {Indicator} = Me.imports.indicator
-
-const Gettext = imports.gettext.domain(Me.metadata['gettext-domain']);
-const _ = Gettext.gettext;
+import * as Constants from './constants.js';
+import {OpenRazerDeviceInfo} from './razer.js';
+import {Indicator} from './indicator.js';
 
 
-class RazerBatteryStatusExtension {
-    constructor(uuid) {
-        this._uuid = uuid;
-        ExtensionUtils.initTranslations(Me.metadata['gettext-domain']);
-    }
-
+export default class RazerBatteryStatusExtension extends Extension {
     enable() {
-        this._indicator = new Indicator();
+        this._indicator = new Indicator(this.dir);
         this._indicator.refreshItem.connect('activate', () => {
             this._refresh();
         });
-        this._datasource = new OpenRazerDeviceInfo();
+        this._datasource = new OpenRazerDeviceInfo(this.dir);
         Main.panel.addToStatusArea(this._uuid, this._indicator);
         this._loop = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, this._runLoop.bind(this));
     }
@@ -62,8 +50,4 @@ class RazerBatteryStatusExtension {
         this._indicator.destroy();
         this._indicator = null;
     }
-}
-
-function init(meta) {
-    return new RazerBatteryStatusExtension(meta.uuid);
 }

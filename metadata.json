@@ -4,6 +4,6 @@
     "gettext-domain": "razer_battery_indicator",
     "uuid": "razer-battery@pshchelo.github.com",
     "shell-version": [
-        "42"
+        "46"
     ]
 }
