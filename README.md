@@ -19,9 +19,8 @@ only manual for now:
 ## Limitations
 Started as 'scratch my itch', so tested only on my single setup.
 
-Tested on GNOME 42, probably will work on GNOME 43 and 44,
-and I expect it won't work on GNOME 45 due to some API changes,
-will have to be adjusted later.
+Tested on GNOME 46, and I expect it won't work on GNOME 44 or older
+due to some GNOME API changes.
 
 When there are several devices, the battery level for the device with least
 battery will be shown in the icon, all the devices with names, battery level
@@ -38,7 +37,6 @@ in the controller app but not in the system tray applet.
 
 ## TODO
 
-- port to GNOME 45+
 - support customizations
   - polling interval
   - debug mode
